@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KURNAKURNA</title>
+<style>
+body { background: #000; color: #ff0000; font-family: 'Courier New', monospace; text-align: center; margin: 0; }
+.container { max-width: 400px; margin: 30px auto; padding: 20px; border: 2px solid #ff0000; border-radius: 30px; box-shadow: 0 0 40px #ff0000; }
+input, button { width: 85%; padding: 12px; margin: 8px; border-radius: 30px; border: 2px solid #ff0000; background: #111; color: #fff; font-size: 16px; }
+button { background: #ff0000; color: #000; font-weight: bold; cursor: pointer; }
+button:hover { box-shadow: 0 0 20px #ff0000; }
+h1 { text-shadow: 0 0 20px #ff0000; }
+.page { display: none; }
+.page.active { display: block; }
+.card { background: #111; padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #ff0000; }
+</style>
+</head>
+<body>
+<h1>KURNAKURNA</h1>
+
+<div id="loginPage" class="page active">
+<div class="container">
+<h2>LOGIN PORTAL</h2>
+<input id="loginEmail" type="email" placeholder="Email">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">LOGIN</button>
+<button onclick="showPage('signupPage')">CREATE ACCOUNT</button>
+<button onclick="localStorage.clear(); alert('All accounts cleared')">CLEAR ALL</button>
+</div>
+</div>
+
+<div id="signupPage" class="page">
+<div class="container">
+<h2>SIGN UP</h2>
+<input id="signName" type="text" placeholder="Full Name">
+<input id="signEmail" type="email" placeholder="Email">
+<input id="signPass" type="password" placeholder="Password">
+<button onclick="signup()">CREATE ACCOUNT</button>
+<button onclick="showPage('loginPage')">BACK TO LOGIN</button>
+</div>
+</div>
+
+<div id="dashboardPage" class="page">
+<div class="container">
+<h2>WELCOME TO KURNAKURNA</h2>
+<p id="welcomeUser"></p>
+<div class="card">
+<h3>YOUR ACCOUNT</h3>
+<p>Status: <b>ACTIVE</b></p>
+<p>Member since: Today</p>
+</div>
+<button onclick="goToChat()">ENTER CHAT</button>
+<button onclick="logout()">LOGOUT</button>
+</div>
+</div>
+
+<div id="chatPage" class="page">
+<div class="container">
+<h2>KURNAKURNA CHAT</h2>
+<div id="chatBox" style="height:300px;overflow-y:auto;border:2px solid #ff0000;border-radius:15px;padding:10px;background:#000;text-align:left;margin-bottom:10px"></div>
+<input id="chatInput" type="text" placeholder="Type message..." onkeydown="if(event.key==='Enter')sendMsg()">
+<button onclick="sendMsg()">SEND</button>
+<button onclick="showPage('dashboardPage')">BACK TO DASHBOARD</button>
+  <button onclick="clearChat()" style="background:#800000">CLEAR CHAT</button>
+</div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function signup() {
+  let name = document.getElementById('signName').value;
+  localStorage.setItem('name', name);
+  localStorage.setItem('email', document.getElementById('signEmail').value);
+  localStorage.setItem('pass', document.getElementById('signPass').value);
+  alert('Account Created!');
+  showPage('loginPage');
+}
+function login() {
+  if(document.getElementById('loginEmail').value === localStorage.getItem('email') && 
+     document.getElementById('loginPass').value === localStorage.getItem('pass')) {
+    document.getElementById('welcomeUser').innerText = "Hello, " + localStorage.getItem('name');
+    alert('Login Successful!');
+    showPage('dashboardPage');
+  } else { alert('Wrong Email or Password!'); }
+}
+function logout() { showPage('loginPage'); }
+function goToChat() {
+  loadChat();
+  showPage('chatPage');
+}
+function sendMsg() {
+  let msg = document.getElementById('chatInput').value;
+  let name = localStorage.getItem('name') || 'Guest';
+  if(msg.trim() === '') return;
+  let chat = JSON.parse(localStorage.getItem('chat') || '[]');
+  chat.push({user: name, text: msg, time: new Date().toLocaleTimeString()});
+  localStorage.setItem('chat', JSON.stringify(chat));
+  document.getElementById('chatInput').value = '';
+  loadChat();
+}
+function loadChat() {
+  let chat = JSON.parse(localStorage.getItem('chat') || '[]');
+  let box = document.getElementById('chatBox');
+  box.innerHTML = '';
+  chat.forEach(m => {
+    box.innerHTML += `<div style="margin:8px 0;padding:8px;background:#1a0000;border-left:3px solid #ff0000;border-radius:8px">
+    <b style="color:#ff0000">${m.user}</b> <span style="font-size:10px;color:#888">${m.time}</span><br>${m.text}
+    </div>`;
+  });
+  box.scrollTop = box.scrollHeight;
+}
+  function clearChat() {
+
+  if(confirm("Delete all messages?")) {
+
+    localStorage.removeItem('chat');
+
+    loadChat();
+
+    alert("Chat Cleared!");
+
+  }
+
+}
+</script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
