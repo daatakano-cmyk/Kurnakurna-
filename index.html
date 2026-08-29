@@ -68,7 +68,7 @@ body{background:#0b141a;color:#e9edef}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
-const app = initializeApp({databaseURL: "YOUR_DATABASE_URL"}); // <-- CHANGE THIS
+const app = initializeApp({databaseURL: "https://kurnakurna-45d9b-default-rtdb.firebaseio.com/"});
 const db = getDatabase(app);
 
 let currentChat = "";
