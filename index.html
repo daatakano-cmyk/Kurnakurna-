@@ -1,146 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kurnakurna</title><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0b141a;color:#e9edef}
+.top{background:#202c33;padding:12px 16px;font-size:20px;color:#00a884;font-weight:bold;display:flex;justify-content:space-between}
+.tabs{display:flex;background:#202c33;position:sticky;top:0}
+.tab{flex:1;padding:12px;text-align:center;color:#8696a0;cursor:pointer}
+.tab.active{color:#00a884;border-bottom:2px solid #00a884}
+.page{display:none;padding:5px}
+.page.active{display:block}
+.chat{display:flex;padding:12px;border-bottom:1px solid #222;align-items:center;cursor:pointer}
+.chat img{width:50px;height:50px;border-radius:50%;margin-right:12px}
+.status-ring{width:56px;height:56px;border-radius:50%;border:3px solid #00a884;padding:2px;margin-right:12px}
+.status-ring img{width:100%;border-radius:50%}
+.chat-box{height:60vh;overflow-y:auto;padding:10px}
+.msg{background:#202c33;padding:8px 12px;border-radius:8px;margin:5px 0;max-width:70%}
+.me{background:#005c4b;margin-left:auto}
+.input{position:fixed;bottom:0;width:100%;display:flex;background:#202c33;padding:8px}
+.input input{flex:1;padding:10px;border:none;border-radius:20px;background:#2a3942;color:white}
+.input button{background:#00a884;border:none;color:white;padding:10px 15px;border-radius:50%;margin-left:8px}
+.back{padding:10px;cursor:pointer;color:#00a884}
+</style></head><body>
 
-  <head>
-    <meta charset="UTF-8">
-    <title>Untitled</title>
-    
+<div class="top">Kurnakurna <span>⋮</span></div>
 
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KURNAKURNA</title>
-<style>
-body { background: #000; color: #ff0000; font-family: 'Courier New', monospace; text-align: center; margin: 0; }
-.container { max-width: 400px; margin: 30px auto; padding: 20px; border: 2px solid #ff0000; border-radius: 30px; box-shadow: 0 0 40px #ff0000; }
-input, button { width: 85%; padding: 12px; margin: 8px; border-radius: 30px; border: 2px solid #ff0000; background: #111; color: #fff; font-size: 16px; }
-button { background: #ff0000; color: #000; font-weight: bold; cursor: pointer; }
-button:hover { box-shadow: 0 0 20px #ff0000; }
-h1 { text-shadow: 0 0 20px #ff0000; }
-.page { display: none; }
-.page.active { display: block; }
-.card { background: #111; padding: 15px; border-radius: 15px; margin: 10px; border: 1px solid #ff0000; }
-</style>
-</head>
-<body>
-<h1>KURNAKURNA</h1>
-
-<div id="loginPage" class="page active">
-<div class="container">
-<h2>LOGIN PORTAL</h2>
-<input id="loginEmail" type="email" placeholder="Email">
-<input id="loginPass" type="password" placeholder="Password">
-<button onclick="login()">LOGIN</button>
-<button onclick="showPage('signupPage')">CREATE ACCOUNT</button>
-<button onclick="localStorage.clear(); alert('All accounts cleared')">CLEAR ALL</button>
-</div>
+<div class="tabs">
+  <div class="tab active" onclick="show('chats')">Chats</div>
+  <div class="tab" onclick="show('status')">Status</div>
+  <div class="tab" onclick="show('groups')">Groups</div>
+  <div class="tab" onclick="show('settings')">Settings</div>
 </div>
 
-<div id="signupPage" class="page">
-<div class="container">
-<h2>SIGN UP</h2>
-<input id="signName" type="text" placeholder="Full Name">
-<input id="signEmail" type="email" placeholder="Email">
-<input id="signPass" type="password" placeholder="Password">
-<button onclick="signup()">CREATE ACCOUNT</button>
-<button onclick="showPage('loginPage')">BACK TO LOGIN</button>
-</div>
-</div>
-
-<div id="dashboardPage" class="page">
-<div class="container">
-<h2>WELCOME TO KURNAKURNA</h2>
-<p id="welcomeUser"></p>
-<div class="card">
-<h3>YOUR ACCOUNT</h3>
-<p>Status: <b>ACTIVE</b></p>
-<p>Member since: Today</p>
-</div>
-<button onclick="goToChat()">ENTER CHAT</button>
-<button onclick="logout()">LOGOUT</button>
-</div>
+<div id="chats" class="page active">
+  <div class="back" onclick="back()" style="display:none">← Back</div>
+  <div id="userList">
+    <div class="chat" onclick="openChat('user2')"><img src="https://i.pravatar.cc/50?2"><div><b>Sadeeq</b><br><small>Tap to chat</small></div></div>
+    <div class="chat" onclick="openChat('user3')"><img src="https://i.pravatar.cc/50?3"><div><b>Abubakar</b><br><small>Tap to chat</small></div></div>
+    <div class="chat" style="opacity:0.5"><img src="https://i.pravatar.cc/50?h"><div><b>Hidden Chat 🔒</b><br><small>Tap to unlock</small></div></div>
+  </div>
+  <div id="chatBox" class="chat-box" style="display:none"></div>
+  <div class="input" style="display:none">
+    <input id="msgInput" placeholder="Type a message">
+    <button onclick="sendMsg()">➤</button>
+  </div>
 </div>
 
-<div id="chatPage" class="page">
-<div class="container">
-<h2>KURNAKURNA CHAT</h2>
-<div id="chatBox" style="height:300px;overflow-y:auto;border:2px solid #ff0000;border-radius:15px;padding:10px;background:#000;text-align:left;margin-bottom:10px"></div>
-<input id="chatInput" type="text" placeholder="Type message..." onkeydown="if(event.key==='Enter')sendMsg()">
-<button onclick="sendMsg()">SEND</button>
-<button onclick="showPage('dashboardPage')">BACK TO DASHBOARD</button>
-  <button onclick="clearChat()" style="background:#800000">CLEAR CHAT</button>
-</div>
+<div id="status" class="page">
+  <div class="chat"><div class="status-ring"><img id="myStatus" src="https://i.pravatar.cc/50?me"></div><div><b>My Status</b><br><small>Tap to add update</small></div></div>
+  <div class="chat"><div class="status-ring"><img src="https://i.pravatar.cc/50?s1"></div><div><b>Sadeeq</b><br><small>5 min ago</small></div></div>
 </div>
 
-<script>
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+<div id="groups" class="page">
+  <div class="chat"><img src="https://i.pravatar.cc/50?com"><div><b>Kurnakurna Community</b><br><small>3 groups</small></div></div>
+  <div class="chat" style="padding-left:30px"><img src="https://i.pravatar.cc/50?g1"><div><b>General</b><br><small>Welcome</small></div></div>
+</div>
+
+<div id="settings" class="page">
+  <div class="chat" onclick="edit()">
+    <img id="pp" src="https://i.pravatar.cc/100?me">
+    <div><b id="name">Kurnakurna</b><br><small>Tap to edit name & photo</small></div>
+  </div>
+  <div class="chat"><div><b>Account</b></div></div>
+  <div class="chat"><div><b>Privacy</b></div></div>
+  <div class="chat"><div><b>Hide Chats</b></div></div>
+  <div class="chat"><div><b>Notifications</b></div></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+const app = initializeApp({databaseURL: "YOUR_DATABASE_URL"}); // <-- CHANGE THIS
+const db = getDatabase(app);
+
+let currentChat = "";
+let myID = "user1"; // <-- CHANGE TO user2 on your friend's phone
+
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
 }
-function signup() {
-  let name = document.getElementById('signName').value;
-  localStorage.setItem('name', name);
-  localStorage.setItem('email', document.getElementById('signEmail').value);
-  localStorage.setItem('pass', document.getElementById('signPass').value);
-  alert('Account Created!');
-  showPage('loginPage');
-}
-function login() {
-  if(document.getElementById('loginEmail').value === localStorage.getItem('email') && 
-     document.getElementById('loginPass').value === localStorage.getItem('pass')) {
-    document.getElementById('welcomeUser').innerText = "Hello, " + localStorage.getItem('name');
-    alert('Login Successful!');
-    showPage('dashboardPage');
-  } else { alert('Wrong Email or Password!'); }
-}
-function logout() { showPage('loginPage'); }
-function goToChat() {
-  loadChat();
-  showPage('chatPage');
-}
-function sendMsg() {
-  let msg = document.getElementById('chatInput').value;
-  let name = localStorage.getItem('name') || 'Guest';
-  if(msg.trim() === '') return;
-  let chat = JSON.parse(localStorage.getItem('chat') || '[]');
-  chat.push({user: name, text: msg, time: new Date().toLocaleTimeString()});
-  localStorage.setItem('chat', JSON.stringify(chat));
-  document.getElementById('chatInput').value = '';
-  loadChat();
-}
-function loadChat() {
-  let chat = JSON.parse(localStorage.getItem('chat') || '[]');
-  let box = document.getElementById('chatBox');
-  box.innerHTML = '';
-  chat.forEach(m => {
-    box.innerHTML += `<div style="margin:8px 0;padding:8px;background:#1a0000;border-left:3px solid #ff0000;border-radius:8px">
-    <b style="color:#ff0000">${m.user}</b> <span style="font-size:10px;color:#888">${m.time}</span><br>${m.text}
-    </div>`;
-  });
-  box.scrollTop = box.scrollHeight;
-}
-  function clearChat() {
 
-  if(confirm("Delete all messages?")) {
-
-    localStorage.removeItem('chat');
-
-    loadChat();
-
-    alert("Chat Cleared!");
-
-  }
-
+function openChat(userID){
+  currentChat = [myID, userID].sort().join("_");
+  document.getElementById('userList').style.display = "none";
+  document.getElementById('chatBox').style.display = "block";
+  document.querySelector('.input').style.display = "flex";
+  document.querySelector('.back').style.display = "block";
+  loadMessages();
 }
-</script>
-</body>
-</html>
-    
-  </body>
-  
-</html>
+
+function back(){
+  document.getElementById('userList').style.display = "block";
+  document.getElementById('chatBox').style.display = "none";
+  document.querySelector('.input').style.display = "none";
+  document.querySelector('.back').style.display = "none";
+}
+
+function sendMsg(){
+  let text = document.getElementById('msgInput').value;
+  if(text){ push(ref(db, "chats/" + currentChat), {text: text, from: myID}); document.getElementById('msgInput').value = ""; }
+}
+
+function loadMessages(){
+  document.getElementById('chatBox').innerHTML = "";
+  onChildAdded(ref(db, "chats/" + currentChat), (data) => {
+    let msg = data.val();
+    let div = document.createElement('div');
+    div.className = 'msg' + (msg.from == myID ? ' me' : '');
+    div.innerText = msg.text;
+    document.getElementById('chatBox').appendChild(div);
+  })
+}
+
+function edit(){
+  let n=prompt("New name:",document.getElementById('name').innerText);
+  if(n)document.getElementById('name').innerText=n;
+  let p=prompt("New photo link:");
+  if(p)document.getElementById('pp').src=p;
+}
+</script></body></html>
