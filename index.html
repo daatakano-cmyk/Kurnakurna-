@@ -1,123 +1,2002 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kurnakurna</title><style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#0b141a;color:#e9edef}
-.top{background:#202c33;padding:12px 16px;font-size:20px;color:#00a884;font-weight:bold;display:flex;justify-content:space-between}
-.tabs{display:flex;background:#202c33;position:sticky;top:0}
-.tab{flex:1;padding:12px;text-align:center;color:#8696a0;cursor:pointer}
-.tab.active{color:#00a884;border-bottom:2px solid #00a884}
-.page{display:none;padding:5px}
-.page.active{display:block}
-.chat{display:flex;padding:12px;border-bottom:1px solid #222;align-items:center;cursor:pointer}
-.chat img{width:50px;height:50px;border-radius:50%;margin-right:12px}
-.status-ring{width:56px;height:56px;border-radius:50%;border:3px solid #00a884;padding:2px;margin-right:12px}
-.status-ring img{width:100%;border-radius:50%}
-.chat-box{height:60vh;overflow-y:auto;padding:10px}
-.msg{background:#202c33;padding:8px 12px;border-radius:8px;margin:5px 0;max-width:70%}
-.me{background:#005c4b;margin-left:auto}
-.input{position:fixed;bottom:0;width:100%;display:flex;background:#202c33;padding:8px}
-.input input{flex:1;padding:10px;border:none;border-radius:20px;background:#2a3942;color:white}
-.input button{background:#00a884;border:none;color:white;padding:10px 15px;border-radius:50%;margin-left:8px}
-.back{padding:10px;cursor:pointer;color:#00a884}
-</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080808">
+<title>KURNAKURNA</title>
 
-<div class="top">Kurnakurna <span>⋮</span></div>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#080808;
+ color:#eee;
+ font-family:Arial,Helvetica,sans-serif
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
 
-<div class="tabs">
-  <div class="tab active" onclick="show('chats')">Chats</div>
-  <div class="tab" onclick="show('status')">Status</div>
-  <div class="tab" onclick="show('groups')">Groups</div>
-  <div class="tab" onclick="show('settings')">Settings</div>
-</div>
+.auth{
+ min-height:100vh;
+ display:grid;
+ place-items:center;
+ padding:20px;
+ background:radial-gradient(circle,#300708,#080808 55%)
+}
+.authbox{
+ width:min(420px,100%);
+ padding:28px;
+ background:#111;
+ border:1px solid #333;
+ border-radius:22px
+}
+.logo{
+ font-size:29px;
+ font-weight:900;
+ letter-spacing:3px
+}
+.logo b{color:#e21b23}
+input{
+ width:100%;
+ padding:13px;
+ margin:6px 0;
+ background:#080808;
+ color:#fff;
+ border:1px solid #333;
+ border-radius:11px
+}
+.btn{
+ background:#e21b23;
+ color:#fff;
+ border:0;
+ border-radius:11px;
+ padding:12px 15px;
+ font-weight:bold
+}
+.secondary{background:#252525}
+.full{width:100%;margin-top:8px}
+.muted{color:#999}
+.link{
+ color:#ff5555;
+ font-weight:bold;
+ cursor:pointer
+}
 
-<div id="chats" class="page active">
-  <div class="back" onclick="back()" style="display:none">← Back</div>
-  <div id="userList">
-    <div class="chat" onclick="openChat('user2')"><img src="https://i.pravatar.cc/50?2"><div><b>Sadeeq</b><br><small>Tap to chat</small></div></div>
-    <div class="chat" onclick="openChat('user3')"><img src="https://i.pravatar.cc/50?3"><div><b>Abubakar</b><br><small>Tap to chat</small></div></div>
-    <div class="chat" style="opacity:0.5"><img src="https://i.pravatar.cc/50?h"><div><b>Hidden Chat 🔒</b><br><small>Tap to unlock</small></div></div>
+.app{min-height:100vh}
+
+.side{
+ position:fixed;
+ width:235px;
+ top:0;
+ bottom:0;
+ background:#0d0d0d;
+ border-right:1px solid #292929;
+ padding:22px 12px
+}
+
+.nav{
+ padding:13px;
+ border-radius:11px;
+ color:#bbb;
+ margin:4px 0;
+ cursor:pointer
+}
+.nav:hover,.nav.active{
+ background:#241012;
+ color:#fff
+}
+
+.main{margin-left:235px}
+
+.top{
+ height:62px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 20px;
+ border-bottom:1px solid #292929;
+ position:sticky;
+ top:0;
+ background:#080808ee;
+ z-index:5
+}
+
+.content{
+ max-width:950px;
+ margin:auto;
+ padding:20px
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:14px
+}
+
+.card{
+ background:#111;
+ border:1px solid #292929;
+ border-radius:16px;
+ padding:18px;
+ margin:12px 0
+}
+
+.row{
+ display:flex;
+ align-items:center;
+ gap:12px
+}
+
+.avatar{
+ width:48px;
+ height:48px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#222
+}
+
+.chatlist{
+ background:#111;
+ border:1px solid #292929;
+ border-radius:16px;
+ overflow:hidden
+}
+
+.chat{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:14px;
+ border-bottom:1px solid #252525;
+ cursor:pointer
+}
+
+.chat:hover{background:#181818}
+
+.messages{
+ height:65vh;
+ overflow:auto;
+ padding:15px;
+ background:#0b0b0b
+}
+
+.bubble{
+ max-width:75%;
+ background:#222;
+ padding:9px 12px;
+ border-radius:13px;
+ margin:6px 0;
+ word-wrap:break-word
+}
+
+.me{
+ margin-left:auto;
+ background:#8f1117
+}
+
+.composer{
+ display:flex;
+ gap:8px;
+ padding:10px;
+ background:#111
+}
+
+.composer input{margin:0}
+
+.bottom{display:none}
+
+a{
+ color:#ff5555
+}
+
+@media(max-width:760px){
+
+ .side{display:none}
+
+ .main{margin:0}
+
+ .content{
+  padding:14px 12px 75px
+ }
+
+ .grid{
+  grid-template-columns:1fr
+ }
+
+ .bottom{
+  display:flex;
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:62px;
+  background:#111;
+  border-top:1px solid #292929;
+  z-index:10;
+  justify-content:space-around
+ }
+
+ .bottom .nav{
+  font-size:10px;
+  text-align:center;
+  padding:7px
+ }
+
+ .top{
+  padding:0 12px
+ }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN / SIGNUP -->
+
+<div id="auth" class="auth">
+
+ <div class="authbox">
+
+  <div class="logo">
+   KURNA<b>KURNA</b>
   </div>
-  <div id="chatBox" class="chat-box" style="display:none"></div>
-  <div class="input" style="display:none">
-    <input id="msgInput" placeholder="Type a message">
-    <button onclick="sendMsg()">➤</button>
+
+  <p class="muted">
+   Connect. Chat. Share. Build.
+  </p>
+
+  <!-- LOGIN -->
+
+  <div id="login">
+
+   <h2>Welcome back</h2>
+
+   <input
+    id="le"
+    type="email"
+    placeholder="Email"
+   >
+
+   <input
+    id="lp"
+    type="password"
+    placeholder="Password"
+   >
+
+   <button
+    class="btn full"
+    onclick="login()"
+   >
+    LOGIN
+   </button>
+
+   <p class="muted">
+    No account?
+    <span
+     class="link"
+     onclick="toggle()"
+    >
+     Create one
+    </span>
+   </p>
+
   </div>
-</div>
 
-<div id="status" class="page">
-  <div class="chat"><div class="status-ring"><img id="myStatus" src="https://i.pravatar.cc/50?me"></div><div><b>My Status</b><br><small>Tap to add update</small></div></div>
-  <div class="chat"><div class="status-ring"><img src="https://i.pravatar.cc/50?s1"></div><div><b>Sadeeq</b><br><small>5 min ago</small></div></div>
-</div>
 
-<div id="groups" class="page">
-  <div class="chat"><img src="https://i.pravatar.cc/50?com"><div><b>Kurnakurna Community</b><br><small>3 groups</small></div></div>
-  <div class="chat" style="padding-left:30px"><img src="https://i.pravatar.cc/50?g1"><div><b>General</b><br><small>Welcome</small></div></div>
-</div>
+  <!-- SIGNUP -->
 
-<div id="settings" class="page">
-  <div class="chat" onclick="edit()">
-    <img id="pp" src="https://i.pravatar.cc/100?me">
-    <div><b id="name">Kurnakurna</b><br><small>Tap to edit name & photo</small></div>
+  <div id="signup" class="hidden">
+
+   <h2>Create account</h2>
+
+   <input
+    id="sn"
+    placeholder="Full name"
+   >
+
+   <input
+    id="se"
+    type="email"
+    placeholder="Email"
+   >
+
+   <input
+    id="sp"
+    type="password"
+    placeholder="Password (6+)"
+   >
+
+   <button
+    class="btn full"
+    onclick="signup()"
+   >
+    CREATE ACCOUNT
+   </button>
+
+   <p class="muted">
+    Already registered?
+    <span
+     class="link"
+     onclick="toggle()"
+    >
+     Login
+    </span>
+   </p>
+
   </div>
-  <div class="chat"><div><b>Account</b></div></div>
-  <div class="chat"><div><b>Privacy</b></div></div>
-  <div class="chat"><div><b>Hide Chats</b></div></div>
-  <div class="chat"><div><b>Notifications</b></div></div>
+
+ </div>
+
 </div>
+
+
+<!-- MAIN APP -->
+
+<div id="app" class="app hidden">
+
+ <aside class="side">
+
+  <div class="logo">
+   KURNA<b>KURNA</b>
+  </div>
+
+  <div id="side"></div>
+
+ </aside>
+
+
+ <main class="main">
+
+  <header class="top">
+
+   <b id="title">Chats</b>
+
+   <button
+    class="btn secondary"
+    onclick="logout()"
+   >
+    Logout
+   </button>
+
+  </header>
+
+
+  <section
+   id="content"
+   class="content"
+  ></section>
+
+ </main>
+
+
+ <nav
+  id="bottom"
+  class="bottom"
+ ></nav>
+
+</div>
+
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
-const app = initializeApp({databaseURL: "https://kurnakurna-45d9b-default-rtdb.firebaseio.com/"});
-const db = getDatabase(app);
+/* =====================================================
+   FIREBASE CONFIGURATION
+   KURNAKURNA 45d9b
+===================================================== */
 
-let currentChat = "";
-let myID = "user1"; // <-- CHANGE TO user2 on your friend's phone
+import {
+ initializeApp
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-function show(id){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    event.target.classList.add('active');
+import {
+ getAuth,
+ createUserWithEmailAndPassword,
+ signInWithEmailAndPassword,
+ signOut,
+ onAuthStateChanged,
+ updateProfile,
+ sendEmailVerification
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+ getDatabase,
+ ref,
+ set,
+ get,
+ push,
+ onValue,
+ query,
+ orderByChild,
+ limitToLast
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+const firebaseConfig = {
+
+ apiKey:
+ "AIzaSyAOnxx7a-7iElWu0GUfTlPuH5UNtgcXv8c",
+
+ authDomain:
+ "kurnakurna-45d9b.firebaseapp.com",
+
+ databaseURL:
+ "https://kurnakurna-45d9b-default-rtdb.firebaseio.com",
+
+ projectId:
+ "kurnakurna-45d9b",
+
+ storageBucket:
+ "kurnakurna-45d9b.firebasestorage.app",
+
+ messagingSenderId:
+ "308258679773",
+
+ appId:
+ "1:308258679773:web:0ebb35ea36c2cd8db32434"
+
+};
+
+
+/* =====================================================
+   INITIALIZE FIREBASE
+===================================================== */
+
+const firebaseApp =
+ initializeApp(firebaseConfig);
+
+const auth =
+ getAuth(firebaseApp);
+
+const db =
+ getDatabase(firebaseApp);
+
+
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
+
+let user = null;
+
+let stopMessages = null;
+
+let currentUser = null;
+
+let page = "chats";
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+const nav = [
+
+ ["chats","💬 Chats"],
+
+ ["status","⭕ Status"],
+
+ ["groups","👥 Groups"],
+
+ ["market","🛒 Market"],
+
+ ["wallet","💰 Wallet"],
+
+ ["games","🎮 Games"],
+
+ ["profile","👤 Profile"],
+
+ ["settings","⚙️ Settings"]
+
+];
+
+
+function renderNavigation(){
+
+ let html = nav.map(item => {
+
+  return `
+   <div
+    class="nav ${page===item[0]?"active":""}"
+    onclick="go('${item[0]}')"
+   >
+    ${item[1]}
+   </div>
+  `;
+
+ }).join("");
+
+ side.innerHTML = html;
+
+ bottom.innerHTML = html;
+
 }
 
 
-function openChat(userID){
-  currentChat = [myID, userID].sort().join("_");
-  document.getElementById('userList').style.display = "none";
-  document.getElementById('chatBox').style.display = "block";
-  document.querySelector('.input').style.display = "flex";
-  document.querySelector('.back').style.display = "block";
-  loadMessages();
+function go(p){
+
+ page = p;
+
+ renderNavigation();
+
+ const found =
+  nav.find(x => x[0] === p);
+
+ title.textContent =
+  found ? found[1].replace(/^\\S+ /,"") : "KURNAKURNA";
+
+
+ if(stopMessages){
+
+  stopMessages();
+
+  stopMessages = null;
+
+ }
+
+
+ if(p==="chats") chats();
+
+ if(p==="status") status();
+
+ if(p==="groups") groups();
+
+ if(p==="market") market();
+
+ if(p==="wallet") wallet();
+
+ if(p==="games") games();
+
+ if(p==="profile") profile();
+
+ if(p==="settings") settings();
+
 }
 
-function back(){
-  document.getElementById('userList').style.display = "block";
-  document.getElementById('chatBox').style.display = "none";
-  document.querySelector('.input').style.display = "none";
-  document.querySelector('.back').style.display = "none";
+
+window.go = go;
+
+
+/* =====================================================
+   LOGIN / SIGNUP
+===================================================== */
+
+function toggle(){
+
+ login.classList.toggle("hidden");
+
+ signup.classList.toggle("hidden");
+
 }
 
-function sendMsg(){
-  let text = document.getElementById('msgInput').value;
-  if(text){ push(ref(db, "chats/" + currentChat), {text: text, from: myID}); document.getElementById('msgInput').value = ""; }
+window.toggle = toggle;
+
+
+async function signup(){
+
+ try{
+
+  const name =
+   sn.value.trim();
+
+  const email =
+   se.value.trim();
+
+  const password =
+   sp.value;
+
+  if(!name){
+
+   alert("Enter your name.");
+
+   return;
+
+  }
+
+  if(password.length < 6){
+
+   alert("Password must contain at least 6 characters.");
+
+   return;
+
+  }
+
+
+  const credential =
+   await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+   );
+
+
+  await updateProfile(
+   credential.user,
+   {
+    displayName:name
+   }
+  );
+
+
+  await set(
+   ref(
+    db,
+    "users/"+credential.user.uid
+   ),
+   {
+    uid:credential.user.uid,
+
+    name:name,
+
+    email:email,
+
+    createdAt:Date.now()
+   }
+  );
+
+
+  await sendEmailVerification(
+   credential.user
+  ).catch(()=>{});
+
+
+  alert(
+   "Account created successfully."
+  );
+
+
+ }catch(error){
+
+  alert(error.message);
+
+ }
+
 }
 
-function loadMessages(){
-  document.getElementById('chatBox').innerHTML = "";
-  onChildAdded(ref(db, "chats/" + currentChat), (data) => {
-    let msg = data.val();
-    let div = document.createElement('div');
-    div.className = 'msg' + (msg.from == myID ? ' me' : '');
-    div.innerText = msg.text;
-    document.getElementById('chatBox').appendChild(div);
-  })
+window.signup = signup;
+
+
+async function login(){
+
+ try{
+
+  const email =
+   le.value.trim();
+
+  const password =
+   lp.value;
+
+  await signInWithEmailAndPassword(
+   auth,
+   email,
+   password
+  );
+
+ }catch(error){
+
+  alert(error.message);
+
+ }
+
 }
 
-function edit(){
-  let n=prompt("New name:",document.getElementById('name').innerText);
-  if(n)document.getElementById('name').innerText=n;
-  let p=prompt("New photo link:");
-  if(p)document.getElementById('pp').src=p;
+window.login = login;
+
+
+async function logout(){
+
+ await signOut(auth);
+
 }
-</script></body></html>
+
+window.logout = logout;
+
+
+/* =====================================================
+   AUTH STATE
+===================================================== */
+
+onAuthStateChanged(
+ auth,
+ async current => {
+
+  user = current;
+
+
+  if(user){
+
+   authDiv();
+
+   const userRef =
+    ref(
+     db,
+     "users/"+user.uid
+    );
+
+   const snapshot =
+    await get(userRef);
+
+
+   if(!snapshot.exists()){
+
+    await set(
+     userRef,
+     {
+      uid:user.uid,
+
+      name:
+       user.displayName ||
+       "KURNAKURNA User",
+
+      email:
+       user.email || "",
+
+      createdAt:
+       Date.now()
+     }
+    );
+
+   }
+
+
+   renderNavigation();
+
+   go("chats");
+
+
+  }else{
+
+   document
+    .getElementById("auth")
+    .classList.remove("hidden");
+
+   document
+    .getElementById("app")
+    .classList.add("hidden");
+
+  }
+
+ }
+);
+
+
+function authDiv(){
+
+ document
+  .getElementById("auth")
+  .classList.add("hidden");
+
+ document
+  .getElementById("app")
+  .classList.remove("hidden");
+
+}
+
+
+/* =====================================================
+   GET USERS
+===================================================== */
+
+async function getUsers(){
+
+ const snapshot =
+  await get(
+   ref(db,"users")
+  );
+
+
+ if(!snapshot.exists())
+  return [];
+
+
+ return Object
+  .values(snapshot.val())
+  .filter(
+   x => x.uid !== user.uid
+  );
+
+}
+
+
+/* =====================================================
+   CHATS
+===================================================== */
+
+async function chats(){
+
+ content.innerHTML = `
+
+  <h2>Chats</h2>
+
+  <input
+   id="search"
+   placeholder="Search KURNAKURNA users..."
+   oninput="filterUsers()"
+  >
+
+  <div
+   id="list"
+   class="chatlist"
+  >
+   Loading users...
+  </div>
+
+ `;
+
+
+ window.allUsers =
+  await getUsers();
+
+
+ drawUsers(
+  window.allUsers
+ );
+
+}
+
+
+function drawUsers(users){
+
+ if(!list)
+  return;
+
+
+ if(!users.length){
+
+  list.innerHTML = `
+
+   <div class="card muted">
+    No other users yet.
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+
+ list.innerHTML =
+  users.map(u => `
+
+   <div
+    class="chat"
+    onclick="openChat('${u.uid}')"
+   >
+
+    <div
+     class="avatar"
+     style="
+      display:grid;
+      place-items:center;
+     "
+    >
+     👤
+    </div>
+
+    <div>
+
+     <b>
+      ${escapeHTML(u.name)}
+     </b>
+
+     <div class="muted">
+      ${escapeHTML(u.email)}
+     </div>
+
+    </div>
+
+   </div>
+
+  `).join("");
+
+}
+
+
+window.filterUsers = function(){
+
+ const q =
+  search.value.toLowerCase();
+
+
+ drawUsers(
+
+  (window.allUsers || [])
+   .filter(u =>
+
+    (u.name || "")
+     .toLowerCase()
+     .includes(q)
+
+    ||
+
+    (u.email || "")
+     .toLowerCase()
+     .includes(q)
+
+   )
+
+ );
+
+};
+
+
+/* =====================================================
+   CHAT
+===================================================== */
+
+function chatID(a,b){
+
+ return [
+  a,
+  b
+ ]
+ .sort()
+ .join("_");
+
+}
+
+
+window.openChat =
+ async function(uid){
+
+  const snapshot =
+   await get(
+    ref(
+     db,
+     "users/"+uid
+    )
+   );
+
+
+  if(!snapshot.exists())
+   return;
+
+
+  currentUser =
+   snapshot.val();
+
+
+  content.innerHTML = `
+
+   <div class="card">
+
+    <button
+     class="btn secondary"
+     onclick="go('chats')"
+    >
+     ← Back
+    </button>
+
+    <b style="margin-left:10px">
+     ${escapeHTML(currentUser.name)}
+    </b>
+
+   </div>
+
+
+   <div
+    id="messages"
+    class="messages"
+   ></div>
+
+
+   <div class="composer">
+
+    <input
+     id="messageInput"
+     placeholder="Type a message..."
+     onkeydown="
+      if(event.key==='Enter')
+      sendMessage()
+     "
+    >
+
+    <button
+     class="btn"
+     onclick="sendMessage()"
+    >
+     ➤
+    </button>
+
+   </div>
+
+  `;
+
+
+  const id =
+   chatID(
+    user.uid,
+    currentUser.uid
+   );
+
+
+  const messagesRef =
+   query(
+    ref(db,"chats/"+id),
+    orderByChild("createdAt"),
+    limitToLast(200)
+   );
+
+
+  stopMessages =
+   onValue(
+    messagesRef,
+    snapshot => {
+
+     messages.innerHTML = "";
+
+
+     snapshot.forEach(
+      child => {
+
+       const message =
+        child.val();
+
+
+       const bubble =
+        document.createElement("div");
+
+
+       bubble.className =
+        "bubble " +
+        (
+         message.from === user.uid
+         ? "me"
+         : ""
+        );
+
+
+       bubble.textContent =
+        message.text;
+
+
+       messages.appendChild(
+        bubble
+       );
+
+      }
+     );
+
+
+     messages.scrollTop =
+      messages.scrollHeight;
+
+    }
+   );
+
+ };
+
+
+window.sendMessage =
+ async function(){
+
+  const input =
+   document.getElementById(
+    "messageInput"
+   );
+
+
+  const text =
+   input.value.trim();
+
+
+  if(!text ||
+     !currentUser)
+   return;
+
+
+  const id =
+   chatID(
+    user.uid,
+    currentUser.uid
+   );
+
+
+  await push(
+   ref(
+    db,
+    "chats/"+id
+   ),
+   {
+
+    text:text,
+
+    from:user.uid,
+
+    to:currentUser.uid,
+
+    createdAt:Date.now()
+
+   }
+  );
+
+
+  input.value = "";
+
+ };
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function status(){
+
+ content.innerHTML = `
+
+  <h2>Status</h2>
+
+  <div class="card">
+
+   <button
+    class="btn"
+    onclick="addStatus()"
+   >
+    ＋ Add Status
+   </button>
+
+  </div>
+
+  <div
+   id="statusList"
+   class="card"
+  >
+   Loading...
+  </div>
+
+ `;
+
+
+ loadStatus();
+
+}
+
+
+window.addStatus =
+ async function(){
+
+  const text =
+   prompt(
+    "Write your status:"
+   );
+
+
+  if(!text)
+   return;
+
+
+  await push(
+   ref(db,"statuses"),
+   {
+
+    uid:user.uid,
+
+    name:
+     user.displayName ||
+     "User",
+
+    text:text,
+
+    createdAt:
+     Date.now()
+
+   }
+  );
+
+
+  loadStatus();
+
+ };
+
+
+async function loadStatus(){
+
+ const snapshot =
+  await get(
+   ref(db,"statuses")
+  );
+
+
+ if(!snapshot.exists()){
+
+  statusList.innerHTML =
+   "No statuses yet.";
+
+  return;
+
+ }
+
+
+ const statuses =
+  Object
+   .values(snapshot.val())
+   .sort(
+    (a,b)=>
+     b.createdAt-a.createdAt
+   );
+
+
+ statusList.innerHTML =
+  statuses.map(s => `
+
+   <div class="card">
+
+    <b>
+     ${escapeHTML(s.name)}
+    </b>
+
+    <p>
+     ${escapeHTML(s.text)}
+    </p>
+
+    <small class="muted">
+     ${new Date(
+      s.createdAt
+     ).toLocaleString()}
+    </small>
+
+   </div>
+
+  `).join("");
+
+}
+
+
+/* =====================================================
+   GROUPS
+===================================================== */
+
+function groups(){
+
+ content.innerHTML = `
+
+  <h2>Groups</h2>
+
+  <div class="card">
+
+   <button
+    class="btn"
+    onclick="createGroup()"
+   >
+    ＋ Create Group
+   </button>
+
+  </div>
+
+  <div id="groupsList"></div>
+
+ `;
+
+
+ loadGroups();
+
+}
+
+
+window.createGroup =
+ async function(){
+
+  const name =
+   prompt(
+    "Group name:"
+   );
+
+
+  if(!name)
+   return;
+
+
+  const groupRef =
+   push(
+    ref(db,"groups")
+   );
+
+
+  await set(
+   groupRef,
+   {
+
+    name:name,
+
+    createdBy:
+     user.uid,
+
+    createdAt:
+     Date.now(),
+
+    members:{
+     [user.uid]:true
+    }
+
+   }
+  );
+
+
+  loadGroups();
+
+ };
+
+
+async function loadGroups(){
+
+ const snapshot =
+  await get(
+   ref(db,"groups")
+  );
+
+
+ if(!snapshot.exists()){
+
+  groupsList.innerHTML = `
+
+   <div class="card muted">
+    No groups yet.
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+
+ groupsList.innerHTML =
+  Object
+   .values(snapshot.val())
+   .map(g => `
+
+    <div class="card">
+
+     <h3>
+      👥 ${escapeHTML(g.name)}
+     </h3>
+
+     <p class="muted">
+      KURNAKURNA group
+     </p>
+
+    </div>
+
+   `)
+   .join("");
+
+}
+
+
+/* =====================================================
+   MARKET
+===================================================== */
+
+function market(){
+
+ content.innerHTML = `
+
+  <h2>Market</h2>
+
+  <div class="card">
+
+   <button
+    class="btn"
+    onclick="createMarketPost()"
+   >
+    ＋ Create Product Post
+   </button>
+
+  </div>
+
+  <div id="marketList"></div>
+
+ `;
+
+
+ loadMarket();
+
+}
+
+
+window.createMarketPost =
+ async function(){
+
+  const title =
+   prompt(
+    "Product title:"
+   );
+
+
+  if(!title)
+   return;
+
+
+  const description =
+   prompt(
+    "Product description:"
+   ) || "";
+
+
+  const link =
+   prompt(
+    "Product/contact link:"
+   ) || "";
+
+
+  await push(
+   ref(db,"market"),
+   {
+
+    title:title,
+
+    description:
+     description,
+
+    link:link,
+
+    name:
+     user.displayName ||
+     "Seller",
+
+    uid:user.uid,
+
+    createdAt:
+     Date.now()
+
+   }
+  );
+
+
+  loadMarket();
+
+ };
+
+
+async function loadMarket(){
+
+ const snapshot =
+  await get(
+   ref(db,"market")
+  );
+
+
+ if(!snapshot.exists()){
+
+  marketList.innerHTML = `
+
+   <div class="card muted">
+    No products yet.
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+
+ const products =
+  Object
+   .values(snapshot.val())
+   .sort(
+    (a,b)=>
+     b.createdAt-a.createdAt
+   );
+
+
+ marketList.innerHTML =
+  products.map(p => `
+
+   <article class="card">
+
+    <h3>
+     🛍️ ${escapeHTML(p.title)}
+    </h3>
+
+    <p>
+     ${escapeHTML(p.description)}
+    </p>
+
+    ${
+     p.link
+     ?
+     `
+      <p>
+       <a
+        href="${escapeHTML(p.link)}"
+        target="_blank"
+        rel="noopener"
+       >
+        ${escapeHTML(p.link)}
+       </a>
+      </p>
+     `
+     :
+     ""
+    }
+
+    <small class="muted">
+     Seller:
+     ${escapeHTML(p.name)}
+    </small>
+
+   </article>
+
+  `)
+  .join("");
+
+}
+
+
+/* =====================================================
+   WALLET
+===================================================== */
+
+function wallet(){
+
+ content.innerHTML = `
+
+  <h2>Wallet</h2>
+
+  <div class="card">
+
+   <div class="muted">
+    Available Balance
+   </div>
+
+   <h1>
+    ₦0.00
+   </h1>
+
+   <p class="muted">
+    Real deposits, withdrawals and
+    savings require a secure backend
+    and payment provider.
+   </p>
+
+   <button
+    class="btn"
+    onclick="walletMessage()"
+   >
+    Deposit
+   </button>
+
+   <button
+    class="btn secondary"
+    onclick="walletMessage()"
+   >
+    Withdraw
+   </button>
+
+  </div>
+
+ `;
+
+}
+
+
+window.walletMessage =
+ function(){
+
+  alert(
+   "The real-money wallet backend has not been connected yet."
+  );
+
+ };
+
+
+/* =====================================================
+   GAMES
+===================================================== */
+
+function games(){
+
+ content.innerHTML = `
+
+  <h2>Games</h2>
+
+  <div class="grid">
+
+   <div class="card">
+
+    <h3>
+     🎮 Tic-Tac-Toe
+    </h3>
+
+    <p class="muted">
+     Play a simple local game.
+    </p>
+
+    <button
+     class="btn"
+     onclick="startGame()"
+    >
+     Play
+    </button>
+
+   </div>
+
+
+   <div class="card">
+
+    <h3>
+     🏆 Achievements
+    </h3>
+
+    <p class="muted">
+     Your KURNAKURNA achievements
+     will appear here.
+    </p>
+
+   </div>
+
+  </div>
+
+
+  <div class="card">
+
+   <p class="muted">
+
+    Real-money betting requires
+    appropriate licensing, age checks,
+    location checks, fraud protection
+    and a secure backend.
+
+   </p>
+
+  </div>
+
+ `;
+
+}
+
+
+window.startGame =
+ function(){
+
+  let board =
+   Array(9).fill("");
+
+  let turn = "X";
+
+
+  content.innerHTML = `
+
+   <h2>
+    Tic-Tac-Toe
+   </h2>
+
+   <div
+    id="gameBoard"
+    style="
+     display:grid;
+     grid-template-columns:
+      repeat(3,80px);
+     gap:5px;
+    "
+   ></div>
+
+   <p id="gameInfo">
+    Turn: X
+   </p>
+
+  `;
+
+
+  gameBoard.innerHTML =
+   board.map(
+    (_,i) => `
+
+     <button
+      style="
+       height:80px;
+       font-size:30px;
+       background:#222;
+       color:white;
+       border:1px solid #444;
+      "
+      onclick="gameMove(${i})"
+     ></button>
+
+    `
+   ).join("");
+
+
+  window.gameMove =
+   function(i){
+
+    if(board[i])
+     return;
+
+
+    board[i] =
+     turn;
+
+
+    gameBoard
+     .children[i]
+     .textContent =
+      turn;
+
+
+    const wins = [
+
+     [0,1,2],
+     [3,4,5],
+     [6,7,8],
+     [0,3,6],
+     [1,4,7],
+     [2,5,8],
+     [0,4,8],
+     [2,4,6]
+
+    ];
+
+
+    if(
+     wins.some(
+      w =>
+       w.every(
+        j =>
+         board[j] === turn
+       )
+     )
+    ){
+
+     gameInfo.textContent =
+      turn+" wins!";
+
+     return;
+
+    }
+
+
+    if(board.every(Boolean)){
+
+     gameInfo.textContent =
+      "Draw!";
+
+     return;
+
+    }
+
+
+    turn =
+     turn === "X"
+     ? "O"
+     : "X";
+
+
+    gameInfo.textContent =
+     "Turn: "+turn;
+
+   };
+
+ };
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+function profile(){
+
+ content.innerHTML = `
+
+  <h2>
+   Profile
+  </h2>
+
+  <div class="card">
+
+   <h2>
+    ${escapeHTML(
+     user.displayName ||
+     "KURNAKURNA User"
+    )}
+   </h2>
+
+   <p class="muted">
+    ${escapeHTML(
+     user.email
+    )}
+   </p>
+
+
+   <button
+    class="btn"
+    onclick="editProfile()"
+   >
+    Edit Profile
+   </button>
+
+  </div>
+
+
+  <div class="card">
+
+   <p class="muted">
+
+    Email verified:
+    ${
+     user.emailVerified
+     ? "Yes"
+     : "No"
+    }
+
+   </p>
+
+  </div>
+
+ `;
+
+}
+
+
+window.editProfile =
+ async function(){
+
+  const name =
+   prompt(
+    "New name:",
+    user.displayName || ""
+   );
+
+
+  if(!name)
+   return;
+
+
+  await updateProfile(
+   user,
+   {
+    displayName:name
+   }
+  );
+
+
+  await set(
+   ref(
+    db,
+    "users/"+user.uid+"/name"
+   ),
+   name
+  );
+
+
+  profile();
+
+ };
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+function settings(){
+
+ content.innerHTML = `
+
+  <h2>
+   Settings
+  </h2>
+
+
+  <div class="card">
+
+   <h3>
+    🔐 Security
+   </h3>
+
+   <p class="muted">
+
+    Email verification,
+    account security and future
+    passkey/fingerprint login
+    can be managed here.
+
+   </p>
+
+   <button
+    class="btn"
+    onclick="verifyEmail()"
+   >
+    Verify Email
+   </button>
+
+  </div>
+
+
+  <div class="card">
+
+   <h3>
+    🔒 Privacy
+   </h3>
+
+   <p class="muted">
+
+    Hidden chats and advanced
+    privacy controls can be connected
+    to Firebase Security Rules.
+
+   </p>
+
+  </div>
+
+
+  <div class="card">
+
+   <h3>
+    Firebase
+   </h3>
+
+   <p class="muted">
+
+    Project:
+    kurnakurna-45d9b
+
+   </p>
+
+  </div>
+
+ `;
+
+}
+
+
+window.verifyEmail =
+ async function(){
+
+  try{
+
+   await sendEmailVerification(
+    user
+   );
+
+   alert(
+    "Verification email sent."
+   );
+
+  }catch(error){
+
+   alert(
+    error.message
+   );
+
+  }
+
+ };
+
+
+/* =====================================================
+   HTML SECURITY
+===================================================== */
+
+function escapeHTML(value){
+
+ return String(
+  value ?? ""
+ )
+ .replace(
+  /[&<>"']/g,
+  function(m){
+
+   return {
+
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+
+   }[m];
+
+  }
+ );
+
+}
+
+</script>
+
+</body>
+</html>
